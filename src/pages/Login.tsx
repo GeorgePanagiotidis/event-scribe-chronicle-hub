@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from 'sonner';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, isAuthenticated } = useAuth();
@@ -24,15 +24,15 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      toast.error('Please provide both email and password');
+    if (!username || !password) {
+      toast.error('Please provide both username and password');
       return;
     }
 
     setIsSubmitting(true);
     
     try {
-      const success = await login(email, password);
+      const success = await login(username, password);
       if (success) {
         navigate('/dashboard');
       }
@@ -49,7 +49,7 @@ const Login = () => {
           <p className="text-foreground/70 mt-2">Sign in to your account</p>
         </div>
         
-        <Card className="border border-border/40 bg-card/30 backdrop-blur-xl shadow-lg">
+        <Card className="border border-border/40 bg-card shadow-sm">
           <CardHeader>
             <CardTitle>Login</CardTitle>
             <CardDescription className="text-foreground/70">Enter your credentials to access the system</CardDescription>
@@ -58,15 +58,15 @@ const Login = () => {
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input 
-                  id="email"
-                  type="email" 
-                  placeholder="your.email@example.com" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="username"
+                  type="text" 
+                  placeholder="your-username" 
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
-                  className="bg-secondary/50 border-border/30"
+                  className="bg-background border-border"
                 />
               </div>
               
@@ -81,14 +81,14 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-secondary/50 border-border/30"
+                  className="bg-background border-border"
                 />
               </div>
 
               <div className="text-sm text-foreground/70">
                 <p>Demo accounts:</p>
-                <p>- Admin: admin@example.com (any password)</p>
-                <p>- User: user@example.com (any password)</p>
+                <p>- Admin: admin (any password)</p>
+                <p>- User: user (any password)</p>
               </div>
             </CardContent>
             

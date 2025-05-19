@@ -19,28 +19,13 @@ const Dashboard = () => {
       format(new Date(event.date), 'yyyy-MM-dd') === today
     );
   }, [events]);
-  
-  // Get upcoming events (next 7 days)
-  const upcomingEvents = React.useMemo(() => {
-    if (!events?.length) return [];
-    const now = new Date();
-    const nextWeek = new Date(now);
-    nextWeek.setDate(now.getDate() + 7);
-    
-    return events.filter(event => {
-      const eventDate = new Date(event.date);
-      return eventDate > now && eventDate <= nextWeek;
-    }).sort((a, b) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-  }, [events]);
 
   return (
     <Layout>
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-semibold mb-6">Dashboard</h1>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -65,33 +50,6 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <p>No events scheduled for today.</p>
-              )}
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Upcoming Events</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <p>Loading events...</p>
-              ) : upcomingEvents.length > 0 ? (
-                <div className="space-y-3">
-                  {upcomingEvents.slice(0, 5).map(event => (
-                    <div key={event.id} className="border-b pb-2 last:border-0">
-                      <div className="flex justify-between">
-                        <h3 className="font-medium">{event.title}</h3>
-                        <span className="text-sm text-muted-foreground">
-                          {format(new Date(event.date), 'MMM d')}
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground truncate">{event.description}</p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p>No upcoming events in the next 7 days.</p>
               )}
             </CardContent>
           </Card>
