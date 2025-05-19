@@ -1,198 +1,169 @@
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import Layout from '@/components/Layout';
+import React, { useState } from 'react';
+import { format } from 'date-fns';
+import { Calendar as CalendarIcon } from 'lucide-react';
+import { DayPicker, DayProps } from 'react-day-picker';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/calendar';
-import { format, startOfMonth, endOfMonth, isSameDay } from 'date-fns';
-import { Event, getEventsByDate, getDatesWithEvents } from '@/services/eventService';
-import { toast } from 'sonner';
-import { CalendarIcon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Layout } from '@/components/Layout';
+import { useQuery } from '@tanstack/react-query';
+import { getEvents } from '@/services/eventService';
+import { useNavigate } from 'react-router-dom';
 
 const CalendarView = () => {
-  const { isAuthenticated } = useAuth();
+  const [date, setDate] = useState<Date>(new Date());
   const navigate = useNavigate();
   
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [eventsForSelectedDate, setEventsForSelectedDate] = useState<Event[]>([]);
-  const [isLoadingEvents, setIsLoadingEvents] = useState(false);
-  const [datesWithEvents, setDatesWithEvents] = useState<Date[]>([]);
+  const { data: events, isLoading } = useQuery({
+    queryKey: ['events'],
+    queryFn: getEvents
+  });
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
+  // Helper functions for dates
+  const isSameDay = (date1: Date, date2: Date) => {
+    return date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate();
+  };
+
+  // Get events for the selected date
+  const selectedDateEvents = events?.filter(event => 
+    event.date && isSameDay(new Date(event.date), date)
+  ) || [];
+
+  // Get unique dates with events
+  const datesWithEvents = events?.reduce<Date[]>((acc, event) => {
+    if (event.date) {
+      const eventDate = new Date(event.date);
+      if (!acc.some(date => isSameDay(date, eventDate))) {
+        acc.push(eventDate);
+      }
     }
-  }, [isAuthenticated, navigate]);
+    return acc;
+  }, []) || [];
 
-  // Load dates that have events for the current month view
-  useEffect(() => {
-    const fetchDatesWithEvents = async () => {
-      try {
-        const start = startOfMonth(selectedDate);
-        const end = endOfMonth(selectedDate);
-        const dates = await getDatesWithEvents(start, end);
-        setDatesWithEvents(dates);
-      } catch (error) {
-        console.error('Failed to load dates with events:', error);
-      }
-    };
-    
-    fetchDatesWithEvents();
-  }, [selectedDate]);
+  // Handle day click
+  const handleDaySelect = (day: Date | undefined) => {
+    if (day) {
+      setDate(day);
+    }
+  };
 
-  // Load events for the selected date
-  useEffect(() => {
-    const fetchEventsForDate = async () => {
-      setIsLoadingEvents(true);
-      try {
-        const events = await getEventsByDate(selectedDate);
-        setEventsForSelectedDate(events);
-      } catch (error) {
-        console.error('Failed to load events for date:', error);
-        toast.error('Failed to load events');
-      } finally {
-        setIsLoadingEvents(false);
-      }
-    };
-    
-    fetchEventsForDate();
-  }, [selectedDate]);
+  // Function to render events for selected date
+  const renderEvents = () => {
+    if (isLoading) {
+      return (
+        <div className="flex justify-center items-center h-48">
+          <p className="text-muted-foreground">Loading events...</p>
+        </div>
+      );
+    }
 
-  // Custom day rendering for the calendar
-  const renderDay = (day: Date) => {
-    // Check if this day has events
-    const hasEvents = datesWithEvents.some(date => isSameDay(date, day));
+    if (selectedDateEvents.length === 0) {
+      return (
+        <div className="flex justify-center items-center h-48">
+          <p className="text-muted-foreground">No events for this date.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        {selectedDateEvents.map((event) => (
+          <Card key={event.id} className="cursor-pointer hover:bg-muted/50 transition-colors"
+            onClick={() => navigate(`/events/${event.id}`)}>
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-medium">{event.title}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {event.time || 'No time specified'}
+                  </p>
+                </div>
+                <Badge variant={event.category === 'important' ? 'destructive' : 'outline'}>
+                  {event.category || 'General'}
+                </Badge>
+              </div>
+              {event.description && (
+                <p className="text-sm mt-2 line-clamp-2">{event.description}</p>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  };
+
+  // Calendar day renderer with correct type for DayPicker
+  const renderDay = (props: DayProps) => {
+    const { date: dayDate, ...dayProps } = props;
+    const isDateWithEvent = datesWithEvents.some(eventDate => isSameDay(eventDate, dayDate));
     
     return (
-      <div className={`relative ${hasEvents ? 'calendar-day-with-events' : ''}`}>
-        <div>{format(day, 'd')}</div>
+      <div
+        {...dayProps}
+        className={cn(
+          dayProps.className,
+          isDateWithEvent && "calendar-day-with-events"
+        )}
+      >
+        {dayDate.getDate()}
       </div>
     );
   };
 
   return (
     <Layout>
-      <div className="space-y-8">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Event Calendar</h1>
-          <Button 
-            className="bg-event-blue-600 hover:bg-event-blue-700"
-            onClick={() => navigate('/events/new')}
-          >
-            Add New Event
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-1">
-            <Card className="shadow border-2 border-blue-100">
-              <CardContent className="pt-6">
-                <div className="text-center mb-4">
-                  <h2 className="text-xl font-semibold">Select Date</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Days with events are marked with a dot
-                  </p>
-                </div>
-                
-                <div className="flex justify-center">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={(date) => date && setSelectedDate(date)}
-                    className="rounded-md border shadow pointer-events-auto"
-                    components={{
-                      Day: renderDay,
-                    }}
-                  />
-                </div>
-                
-                <div className="mt-6 text-center">
-                  <p className="text-sm text-muted-foreground">
-                    Selected date: {format(selectedDate, 'MMMM d, yyyy')}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+      <div className="container py-6">
+        <h1 className="text-3xl font-bold mb-6">Event Calendar</h1>
+        
+        <div className="grid grid-cols-1 md:grid-cols-[350px_1fr] gap-6">
+          {/* Calendar */}
+          <div className="bg-card rounded-lg border shadow p-4">
+            <DayPicker
+              mode="single"
+              selected={date}
+              onSelect={handleDaySelect}
+              className="border-none"
+              components={{
+                Day: renderDay
+              }}
+              modifiers={{
+                today: new Date(),
+              }}
+              modifiersStyles={{
+                selected: { 
+                  backgroundColor: 'hsl(var(--primary))',
+                  color: 'hsl(var(--primary-foreground))'
+                },
+                today: { 
+                  fontWeight: 'bold',
+                  border: '1px solid hsl(var(--primary))'
+                }
+              }}
+            />
           </div>
-
-          <div className="md:col-span-2">
-            <Card className="shadow border-2 border-blue-100 h-full">
-              <div className="flex items-center justify-between px-6 py-4 bg-blue-50 border-b">
-                <h2 className="text-xl font-semibold flex items-center">
-                  <CalendarIcon className="mr-2 h-5 w-5 text-event-blue-600" />
-                  Events on {format(selectedDate, 'MMMM d, yyyy')}
-                </h2>
-                <Button 
-                  size="sm"
-                  variant="outline"
-                  onClick={() => navigate(`/events/new`)}
-                >
-                  Add Event
-                </Button>
-              </div>
-              
-              <CardContent className="pt-6">
-                {isLoadingEvents ? (
-                  <div className="text-center py-10">
-                    <p>Loading events...</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {eventsForSelectedDate.length > 0 ? (
-                      eventsForSelectedDate.map(event => (
-                        <Card key={event.id} className="shadow-sm hover:shadow transition-shadow">
-                          <div className="p-4">
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <Link to={`/events/${event.id}`} className="text-lg font-semibold hover:text-event-blue-600">
-                                  {event.title}
-                                </Link>
-                                <p className="text-sm text-muted-foreground">
-                                  {event.time} • Created by {event.createdBy}
-                                </p>
-                              </div>
-                              
-                              <Link to={`/events/${event.id}`}>
-                                <Button variant="ghost" size="sm">View</Button>
-                              </Link>
-                            </div>
-                            
-                            <p className="mt-2 line-clamp-2">{event.description}</p>
-                            
-                            {event.imageUrls && event.imageUrls.length > 0 && (
-                              <div className="mt-3 flex space-x-2 overflow-auto">
-                                {event.imageUrls.map((url, index) => (
-                                  <img 
-                                    key={index}
-                                    src={url} 
-                                    alt={`Event image ${index + 1}`}
-                                    className="w-16 h-16 rounded object-cover"
-                                  />
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </Card>
-                      ))
-                    ) : (
-                      <div className="text-center py-10">
-                        <p className="text-muted-foreground">No events scheduled for this date</p>
-                        <Button 
-                          onClick={() => navigate('/events/new')}
-                          className="mt-4"
-                          variant="outline"
-                        >
-                          Create New Event
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          
+          {/* Events for selected date */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <CalendarIcon className="h-5 w-5" />
+              <h2 className="text-xl font-semibold">
+                Events for {format(date, 'MMMM d, yyyy')}
+              </h2>
+            </div>
+            
+            <div className="bg-card rounded-lg border shadow p-4">
+              {renderEvents()}
+            </div>
+            
+            <div className="flex justify-end">
+              <Button onClick={() => navigate('/events/new')} className="bg-event-blue-600 hover:bg-event-blue-700">
+                Add New Event
+              </Button>
+            </div>
           </div>
         </div>
       </div>
