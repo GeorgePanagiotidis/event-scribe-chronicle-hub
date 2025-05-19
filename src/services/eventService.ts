@@ -11,6 +11,8 @@ export interface Event {
   imageUrls: string[];
   createdBy: string;
   createdById: string;
+  location?: string;
+  category?: string;
 }
 
 // Mock event data
@@ -25,6 +27,8 @@ const MOCK_EVENTS: Event[] = [
     imageUrls: ['/placeholder.svg'],
     createdBy: 'Admin User',
     createdById: '1',
+    location: 'Conference Room A',
+    category: 'meeting'
   },
   {
     id: '2',
@@ -36,6 +40,8 @@ const MOCK_EVENTS: Event[] = [
     imageUrls: ['/placeholder.svg'],
     createdBy: 'Admin User',
     createdById: '1',
+    location: 'Server Room',
+    category: 'critical'
   },
   {
     id: '3',
@@ -47,6 +53,8 @@ const MOCK_EVENTS: Event[] = [
     imageUrls: ['/placeholder.svg'],
     createdBy: 'Regular User',
     createdById: '2',
+    location: 'Meeting Room B',
+    category: 'presentation'
   }
 ];
 

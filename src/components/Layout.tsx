@@ -32,9 +32,6 @@ export function Layout({ children }: LayoutProps) {
       <div className="flex h-full">
         {/* Sidebar for Desktop */}
         <Sidebar
-          collapsible="offcanvas"
-          open={open}
-          onOpenChange={setOpen}
           className="border-r bg-sidebar"
         >
           <SidebarHeader>

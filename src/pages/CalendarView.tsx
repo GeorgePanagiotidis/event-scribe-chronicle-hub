@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -5,17 +6,7 @@ import { Layout } from "@/components/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useEvents } from "@/hooks/use-events";
-
-// Add this type to ensure we can use category property
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  date: Date;
-  location: string;
-  category?: string;
-  // ... other properties
-}
+import { Event } from "@/services/eventService";
 
 const CalendarView = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
@@ -30,7 +21,7 @@ const CalendarView = () => {
       if (!grouped[dateString]) {
         grouped[dateString] = [];
       }
-      grouped[dateString].push(event as Event);
+      grouped[dateString].push(event);
     });
     
     return grouped;
