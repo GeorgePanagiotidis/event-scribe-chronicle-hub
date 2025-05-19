@@ -14,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 214 100% 52%; 
+    --primary: 200 85% 45%; 
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96%;
@@ -31,18 +31,18 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 214 100% 52%;
+    --ring: 200 85% 45%;
 
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 214 100% 52%;
+    --sidebar-primary: 200 85% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 40% 96%;
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 214 100% 52%;
+    --sidebar-ring: 200 85% 45%;
   }
 
   /* Keep the light mode class with our new color scheme */
@@ -56,7 +56,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 214 100% 52%; 
+    --primary: 200 85% 45%; 
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96%;
@@ -73,16 +73,16 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 214 100% 52%;
+    --ring: 200 85% 45%;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 214 100% 52%;
+    --sidebar-primary: 200 85% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 40% 96%;
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 214 100% 52%;
+    --sidebar-ring: 200 85% 45%;
   }
 }
 
@@ -110,5 +110,5 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: theme('colors.event-blue.500');
+  background-color: theme('colors.primary');
 }

@@ -63,13 +63,18 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Custom colors for our app
-				"event-blue": {
+				// Custom colors matching the background image
+				"ocean-blue": {
 					50: "#EFF6FF",
 					100: "#DBEAFE",
-					500: "#3B82F6",
-					600: "#2563EB",
-					700: "#1D4ED8"
+					500: "#0EA5E9",
+					600: "#0284C7",
+					700: "#0369A1"
+				},
+				"midnight-blue": {
+					700: "#0F2027",
+					800: "#203A43",
+					900: "#2C5364"
 				},
 			},
 			borderRadius: {

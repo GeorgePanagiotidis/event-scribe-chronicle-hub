@@ -52,7 +52,7 @@ const CalendarView = () => {
   return (
     <Layout>
       <div className="container mx-auto p-4 md:p-6">
-        <h1 className="text-2xl font-bold mb-6">Calendar View</h1>
+        <h1 className="text-2xl font-bold mb-6">ΗΜΕΡΟΛΟΓΙΟ ΣΥΜΒΑΝΤΩΝ</h1>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Calendar */}

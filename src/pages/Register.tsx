@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 
 const Register = () => {
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,7 +28,7 @@ const Register = () => {
     e.preventDefault();
     
     // Validation
-    if (!name || !email || !password) {
+    if (!name || !username || !password) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -41,7 +41,8 @@ const Register = () => {
     setIsSubmitting(true);
     
     try {
-      const success = await register(name, email, password);
+      // Pass username instead of email
+      const success = await register(name, username, password);
       if (success) {
         navigate('/dashboard');
       }
@@ -54,11 +55,11 @@ const Register = () => {
     <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-blue-50 to-white p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-event-blue-700">Event Reporting System</h1>
+          <h1 className="text-3xl font-bold text-primary">Event Reporting System</h1>
           <p className="text-gray-600 mt-2">Create your account</p>
         </div>
         
-        <Card className="border-2 border-event-blue-100 shadow-lg">
+        <Card className="border-2 border-primary/10 shadow-lg">
           <CardHeader>
             <CardTitle>Sign Up</CardTitle>
             <CardDescription>Enter your details to create an account</CardDescription>
@@ -78,13 +79,13 @@ const Register = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input 
-                  id="email"
-                  type="email" 
-                  placeholder="your.email@example.com" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="username"
+                  type="text" 
+                  placeholder="johndoe" 
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                 />
               </div>
@@ -117,7 +118,7 @@ const Register = () => {
             <CardFooter className="flex flex-col space-y-4">
               <Button 
                 type="submit" 
-                className="w-full bg-event-blue-600 hover:bg-event-blue-700"
+                className="w-full bg-primary hover:bg-primary/90"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Creating Account...' : 'Create Account'}
@@ -125,7 +126,7 @@ const Register = () => {
               
               <div className="text-center text-sm">
                 Already have an account?{' '}
-                <Link to="/login" className="text-event-blue-600 hover:text-event-blue-700 font-medium">
+                <Link to="/login" className="text-primary hover:text-primary/90 font-medium">
                   Sign in
                 </Link>
               </div>
@@ -134,7 +135,7 @@ const Register = () => {
         </Card>
         
         <div className="text-center mt-8">
-          <Link to="/" className="text-sm text-event-blue-600 hover:text-event-blue-700">
+          <Link to="/" className="text-sm text-primary hover:text-primary/90">
             ← Back to Home
           </Link>
         </div>

@@ -42,14 +42,14 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-background p-4">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-blue-50 to-white p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-primary">Event Reporting System</h1>
           <p className="text-foreground/70 mt-2">Sign in to your account</p>
         </div>
         
-        <Card className="border border-border/40 bg-card shadow-sm">
+        <Card className="border border-primary/10 bg-card shadow-sm">
           <CardHeader>
             <CardTitle>Login</CardTitle>
             <CardDescription className="text-foreground/70">Enter your credentials to access the system</CardDescription>
