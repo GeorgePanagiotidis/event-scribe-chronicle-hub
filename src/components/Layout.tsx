@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { User, Calendar, FileText, Users, Settings, Menu } from "lucide-react";
+import { FileText, Calendar, Users, Settings, Menu } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,110 +9,127 @@ import {
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
-  SidebarNav,
-  SidebarNavItem,
-  SidebarResponsive,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
-  const { isOpen, setIsOpen } = useSidebar();
+  const { open, setOpen } = useSidebar();
   const { user, logout } = useAuth();
   const location = useLocation();
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
   
   return (
     <div className="min-h-screen w-full bg-background">
       <div className="flex h-full">
         {/* Sidebar for Desktop */}
-        <SidebarResponsive
-          open={isOpen}
-          onOpenChange={setIsOpen}
-          breakpoint="md"
-          responsive="md"
-          // Correct the error by using the proper type from the interface
+        <Sidebar
+          collapsible="offcanvas"
+          open={open}
+          onOpenChange={setOpen}
           className="border-r bg-sidebar"
         >
-          <Sidebar>
-            <SidebarHeader>
-              <Link to="/dashboard" className="flex items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-sidebar-primary text-white">
-                  <FileText size={24} />
-                </div>
-                <div className="font-bold">Event Reporter</div>
-              </Link>
-            </SidebarHeader>
-            <SidebarContent>
-              {/* Correct the error by removing "defaultOpen" prop which doesn't exist */}
-              <div>
-                <SidebarNav>
-                  <SidebarNavItem
-                    as={Link}
-                    to="/dashboard"
-                    icon={<FileText size={20} />}
-                    label="Dashboard"
-                    isActive={location.pathname === "/dashboard"}
-                  />
-                  <SidebarNavItem
-                    as={Link}
-                    to="/events/new"
-                    icon={<FileText size={20} />}
-                    label="Create Event"
-                    isActive={location.pathname === "/events/new"}
-                  />
-                  <SidebarNavItem
-                    as={Link}
-                    to="/calendar"
-                    icon={<Calendar size={20} />}
-                    label="Calendar View"
-                    isActive={location.pathname === "/calendar"}
-                  />
-                  {user?.role === "admin" && (
-                    <SidebarNavItem
-                      as={Link}
-                      to="/users"
-                      icon={<Users size={20} />}
-                      label="User Management"
-                      isActive={location.pathname === "/users"}
-                    />
-                  )}
-                </SidebarNav>
+          <SidebarHeader>
+            <Link to="/dashboard" className="flex items-center gap-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-sidebar-primary text-white">
+                <FileText size={24} />
               </div>
-            </SidebarContent>
-            <SidebarFooter>
-              <div className="flex items-center justify-between p-4">
-                <div className="flex items-center gap-2">
-                  <Avatar>
-                    <AvatarFallback>
-                      {user?.name?.charAt(0) || "U"}
-                    </AvatarFallback>
-                    {user?.avatar && <AvatarImage src={user.avatar} />}
-                  </Avatar>
-                  <div>
-                    <div className="font-medium">{user?.name || "User"}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {user?.role || "User"}
-                    </div>
+              <div className="font-bold">Event Reporter</div>
+            </Link>
+          </SidebarHeader>
+          <SidebarContent>
+            <div>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname === "/dashboard"}
+                    tooltip="Dashboard"
+                  >
+                    <Link to="/dashboard" className="flex items-center gap-2">
+                      <FileText size={20} />
+                      <span>Dashboard</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname === "/events/new"}
+                    tooltip="Create Event"
+                  >
+                    <Link to="/events/new" className="flex items-center gap-2">
+                      <FileText size={20} />
+                      <span>Create Event</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname === "/calendar"}
+                    tooltip="Calendar View"
+                  >
+                    <Link to="/calendar" className="flex items-center gap-2">
+                      <Calendar size={20} />
+                      <span>Calendar View</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                
+                {user?.role === "admin" && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={location.pathname === "/users"}
+                      tooltip="User Management"
+                    >
+                      <Link to="/users" className="flex items-center gap-2">
+                        <Users size={20} />
+                        <span>User Management</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+              </SidebarMenu>
+            </div>
+          </SidebarContent>
+          <SidebarFooter>
+            <div className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-2">
+                <Avatar>
+                  <AvatarFallback>
+                    {user?.name?.charAt(0) || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <div className="font-medium">{user?.name || "User"}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {user?.role || "User"}
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={logout}
-                  title="Logout"
-                >
-                  <Settings size={20} />
-                </Button>
               </div>
-            </SidebarFooter>
-          </Sidebar>
-        </SidebarResponsive>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={logout}
+                title="Logout"
+              >
+                <Settings size={20} />
+              </Button>
+            </div>
+          </SidebarFooter>
+        </Sidebar>
 
         {/* Main Content */}
         <div className="flex-1">
@@ -128,7 +145,7 @@ export function Layout({ children }: LayoutProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => setOpen(!open)}
               >
                 <Menu size={20} />
               </Button>
@@ -142,3 +159,5 @@ export function Layout({ children }: LayoutProps) {
     </div>
   );
 }
+
+export default Layout;
