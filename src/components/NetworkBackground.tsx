@@ -111,7 +111,7 @@ const NetworkBackground: React.FC = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 z-0"
+      className="w-full h-full fixed inset-0"
       style={{ background: 'linear-gradient(to bottom right, #0f2027, #203a43, #2c5364)' }}
     />
   );

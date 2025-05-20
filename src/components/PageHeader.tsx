@@ -14,20 +14,15 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ title }) => {
 
   return (
     <div className="w-full">
-      {/* Top Banner with background image */}
+      {/* Top Banner with title */}
       <div 
-        className="w-full bg-cover bg-center h-32 flex items-center justify-center" 
-        style={{ 
-          backgroundImage: "url('/assets/event-bg.jpg')",
-          backgroundSize: "cover",
-          boxShadow: "inset 0 0 0 2000px rgba(0, 0, 0, 0.5)"
-        }}
+        className="w-full h-32 flex items-center justify-center relative z-10"
       >
         <h1 className="text-3xl font-bold text-white">{title}</h1>
       </div>
       
       {/* Navigation Menu */}
-      <div className="bg-white border-b shadow-sm">
+      <div className="bg-white/80 backdrop-blur-sm border-b shadow-sm">
         <div className="container mx-auto px-4 py-2">
           <Tabs defaultValue="dashboard" className="w-full">
             <TabsList className="w-full justify-start">
