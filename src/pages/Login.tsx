@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import NetworkBackground from '@/components/NetworkBackground';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -42,23 +43,26 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-blue-50 to-white p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex flex-col justify-center items-center relative p-4">
+      {/* Network Background from home page */}
+      <NetworkBackground />
+      
+      <div className="w-full max-w-md z-10">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary">Event Reporting System</h1>
-          <p className="text-foreground/70 mt-2">Sign in to your account</p>
+          <h1 className="text-3xl font-bold text-white">ΗΜΕΡΟΛΟΓΙΟ ΣΥΜΒΑΝΤΩΝ</h1>
+          <p className="text-white/70 mt-2">Δημιουργία Λογαριασμού</p>
         </div>
         
-        <Card className="border border-primary/10 bg-card shadow-sm">
+        <Card className="border border-white/10 bg-white/10 backdrop-blur-lg shadow-lg">
           <CardHeader>
-            <CardTitle>Login</CardTitle>
-            <CardDescription className="text-foreground/70">Enter your credentials to access the system</CardDescription>
+            <CardTitle className="text-white">Εγγραφή</CardTitle>
+            <CardDescription className="text-white/70">Δημιουργία Λογαριασμού</CardDescription>
           </CardHeader>
           
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username" className="text-white">Username</Label>
                 <Input 
                   id="username"
                   type="text" 
@@ -66,13 +70,13 @@ const Login = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
-                  className="bg-background border-border"
+                  className="bg-white/20 border-white/30 text-white placeholder:text-white/50"
                 />
               </div>
               
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-white">Password</Label>
                 </div>
                 <Input 
                   id="password"
@@ -81,11 +85,11 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-background border-border"
+                  className="bg-white/20 border-white/30 text-white placeholder:text-white/50"
                 />
               </div>
 
-              <div className="text-sm text-foreground/70">
+              <div className="text-sm text-white/70">
                 <p>Demo accounts:</p>
                 <p>- Admin: admin (any password)</p>
                 <p>- User: user (any password)</p>
@@ -95,16 +99,16 @@ const Login = () => {
             <CardFooter className="flex flex-col space-y-4">
               <Button 
                 type="submit" 
-                className="w-full bg-primary hover:bg-primary/80"
+                className="w-full bg-white text-blue-900 hover:bg-blue-50"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Signing in...' : 'Sign In'}
+                {isSubmitting ? 'Signing in...' : 'Εγγραφή'}
               </Button>
               
-              <div className="text-center text-sm">
-                Don't have an account?{' '}
-                <Link to="/register" className="text-primary hover:text-primary/90 font-medium">
-                  Sign up
+              <div className="text-center text-sm text-white">
+                Δεν έχετε Λογαρισμό;{' '}
+                <Link to="/register" className="text-white hover:text-white/90 font-medium">
+                  Εγγραφή
                 </Link>
               </div>
             </CardFooter>
@@ -112,7 +116,7 @@ const Login = () => {
         </Card>
         
         <div className="text-center mt-8">
-          <Link to="/" className="text-sm text-primary hover:text-primary/90">
+          <Link to="/" className="text-sm text-white hover:text-white/90">
             ← Back to Home
           </Link>
         </div>
