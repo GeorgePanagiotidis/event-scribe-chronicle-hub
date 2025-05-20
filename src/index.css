@@ -110,5 +110,5 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: theme('colors.primary');
+  background-color: theme('colors.primary.DEFAULT');
 }
