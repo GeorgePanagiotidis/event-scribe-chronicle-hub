@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
+import { PageHeader } from "@/components/PageHeader";
 
 const Dashboard = () => {
   const { events, isLoading } = useEvents();
@@ -22,9 +23,9 @@ const Dashboard = () => {
 
   return (
     <Layout>
+      <PageHeader title="ΗΜΕΡΟΛΟΓΙΟ ΣΥΜΒΑΝΤΩΝ" />
+      
       <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-semibold mb-6">Dashboard</h1>
-        
         <div className="grid grid-cols-1 gap-6">
           <Card>
             <CardHeader>

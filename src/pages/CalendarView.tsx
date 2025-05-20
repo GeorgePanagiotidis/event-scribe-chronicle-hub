@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useEvents } from "@/hooks/use-events";
 import { Event } from "@/services/eventService";
+import { PageHeader } from "@/components/PageHeader";
 
 const CalendarView = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
@@ -51,9 +52,9 @@ const CalendarView = () => {
   
   return (
     <Layout>
+      <PageHeader title="ΗΜΕΡΟΛΟΓΙΟ ΣΥΜΒΑΝΤΩΝ" />
+      
       <div className="container mx-auto p-4 md:p-6">
-        <h1 className="text-2xl font-bold mb-6">ΗΜΕΡΟΛΟΓΙΟ ΣΥΜΒΑΝΤΩΝ</h1>
-        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Calendar */}
           <div className="bg-card text-card-foreground shadow-lg rounded-lg p-4 lg:col-span-1">
