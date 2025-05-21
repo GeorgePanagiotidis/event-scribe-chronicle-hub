@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Layout } from "@/components/Layout";
 import { useNavigate } from 'react-router-dom';
-import { useAuth, UserRole } from '@/contexts/AuthContext';
+import { useAuth, UserRole, User } from '@/contexts/auth';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/PageHeader";
@@ -10,13 +9,7 @@ import ActiveUsersTab from '@/components/user-management/ActiveUsersTab';
 import PendingUsersTab from '@/components/user-management/PendingUsersTab';
 import AddUserTab from '@/components/user-management/AddUserTab';
 
-interface UserData {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  status: string;
-}
+interface UserData extends User {}
 
 const UserManagement = () => {
   const { 

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { UserRole } from '@/contexts/AuthContext';
+import { UserRole } from '@/contexts/auth/types';
 import { Button } from "@/components/ui/button";
 import {
   Table,
