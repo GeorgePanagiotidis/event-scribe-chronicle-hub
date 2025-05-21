@@ -3,34 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { Layout } from "@/components/Layout";
 import { useNavigate } from 'react-router-dom';
 import { useAuth, UserRole } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/PageHeader";
+import ActiveUsersTab from '@/components/user-management/ActiveUsersTab';
+import PendingUsersTab from '@/components/user-management/PendingUsersTab';
+import AddUserTab from '@/components/user-management/AddUserTab';
 
 interface UserData {
   id: string;
@@ -171,219 +149,35 @@ const UserManagement = () => {
           
           {/* Active Users Tab */}
           <TabsContent value="active">
-            <Card>
-              <CardHeader className="bg-blue-50 border-b">
-                <CardTitle>Ενεργοί Χρήστες</CardTitle>
-                <CardDescription>Διαχείριση λογαριασμών και δικαιωμάτων</CardDescription>
-              </CardHeader>
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Ονοματεπώνυμο</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Ρόλος</TableHead>
-                      <TableHead>Ενέργειες</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {activeUsers.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={4} className="text-center py-6">
-                          Δεν υπάρχουν ενεργοί χρήστες
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      activeUsers.map(u => (
-                        <TableRow key={u.id}>
-                          <TableCell className="font-medium">{u.name}</TableCell>
-                          <TableCell>{u.email}</TableCell>
-                          <TableCell>
-                            <Select
-                              value={u.role}
-                              onValueChange={(value) => handleRoleChange(u.id, value as UserRole)}
-                              disabled={u.id === user?.id}
-                            >
-                              <SelectTrigger className="w-32">
-                                <SelectValue placeholder="Επιλέξτε ρόλο" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="admin">Διαχειριστής</SelectItem>
-                                <SelectItem value="editor">Συντάκτης</SelectItem>
-                                <SelectItem value="viewer">Αναγνώστης</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
-                          <TableCell className="space-x-2">
-                            <Button 
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleResetPassword(u.id)}
-                              disabled={u.id === user?.id}
-                            >
-                              Επαναφορά κωδικού
-                            </Button>
-                            <Button 
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => handleDeleteUser(u.id)}
-                              disabled={u.id === user?.id}
-                            >
-                              Διαγραφή
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+            <ActiveUsersTab 
+              activeUsers={activeUsers}
+              currentUserId={user?.id}
+              onRoleChange={handleRoleChange}
+              onResetPassword={handleResetPassword}
+              onDeleteUser={handleDeleteUser}
+            />
           </TabsContent>
           
           {/* Pending Users Tab */}
           <TabsContent value="pending">
-            <Card>
-              <CardHeader className="bg-blue-50 border-b">
-                <CardTitle>Εκκρεμείς Εγκρίσεις</CardTitle>
-                <CardDescription>Χρήστες που περιμένουν έγκριση</CardDescription>
-              </CardHeader>
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Ονοματεπώνυμο</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Ρόλος</TableHead>
-                      <TableHead>Ενέργειες</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pendingUsers.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={4} className="text-center py-6">
-                          Δεν υπάρχουν εκκρεμείς εγκρίσεις
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      pendingUsers.map(u => (
-                        <TableRow key={u.id}>
-                          <TableCell className="font-medium">{u.name}</TableCell>
-                          <TableCell>{u.email}</TableCell>
-                          <TableCell>
-                            <Select
-                              value={u.role}
-                              onValueChange={(value) => handleRoleChange(u.id, value as UserRole)}
-                            >
-                              <SelectTrigger className="w-32">
-                                <SelectValue placeholder="Επιλέξτε ρόλο" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="admin">Διαχειριστής</SelectItem>
-                                <SelectItem value="editor">Συντάκτης</SelectItem>
-                                <SelectItem value="viewer">Αναγνώστης</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
-                          <TableCell className="space-x-2">
-                            <Button 
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleApproveUser(u.id)}
-                              className="bg-green-50 text-green-700 hover:bg-green-100 border-green-200"
-                            >
-                              Έγκριση
-                            </Button>
-                            <Button 
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => handleRejectUser(u.id)}
-                            >
-                              Απόρριψη
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+            <PendingUsersTab 
+              pendingUsers={pendingUsers}
+              onRoleChange={handleRoleChange}
+              onApprove={handleApproveUser}
+              onReject={handleRejectUser}
+              onResetPassword={handleResetPassword}
+              onDeleteUser={handleDeleteUser}
+            />
           </TabsContent>
           
           {/* Add User Tab */}
           <TabsContent value="add">
-            <Card>
-              <CardHeader className="bg-blue-50 border-b">
-                <CardTitle>Προσθήκη Νέου Χρήστη</CardTitle>
-                <CardDescription>Δημιουργία νέου λογαριασμού χρήστη</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <form onSubmit={handleAddUser} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Ονοματεπώνυμο</Label>
-                    <Input 
-                      id="name"
-                      value={newUser.name}
-                      onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                      placeholder="πχ. Επχίας Παπαδόπουλος Κωνσταντίνος"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input 
-                      id="email"
-                      type="email"
-                      value={newUser.email}
-                      onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                      placeholder="example@mail.com"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Κωδικός</Label>
-                    <Input 
-                      id="password"
-                      type="password"
-                      value={newUser.password}
-                      onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                      placeholder="••••••••"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="role">Ρόλος</Label>
-                    <Select
-                      value={newUser.role}
-                      onValueChange={(value) => setNewUser({ ...newUser, role: value as UserRole })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Επιλέξτε ρόλο" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="admin">Διαχειριστής</SelectItem>
-                        <SelectItem value="editor">Συντάκτης</SelectItem>
-                        <SelectItem value="viewer">Αναγνώστης</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="pt-2">
-                    <Button 
-                      type="submit"
-                      className="w-full"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? 'Προσθήκη...' : 'Προσθήκη Χρήστη'}
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
+            <AddUserTab 
+              newUser={newUser}
+              setNewUser={setNewUser}
+              onSubmit={handleAddUser}
+              isLoading={isLoading}
+            />
           </TabsContent>
         </Tabs>
       </div>
