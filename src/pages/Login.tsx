@@ -26,7 +26,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username || !password) {
-      toast.error('Please provide both username and password');
+      toast.error('Παρακαλώ συμπληρώστε όνομα χρήστη και κωδικό');
       return;
     }
 
@@ -50,23 +50,23 @@ const Login = () => {
       <div className="w-full max-w-md z-10">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white">ΗΜΕΡΟΛΟΓΙΟ ΣΥΜΒΑΝΤΩΝ</h1>
-          <p className="text-white/70 mt-2">Δημιουργία Λογαριασμού</p>
+          <p className="text-white/70 mt-2">Είσοδος στην εφαρμογή</p>
         </div>
         
         <Card className="border border-white/10 bg-white/10 backdrop-blur-lg shadow-lg">
           <CardHeader>
-            <CardTitle className="text-white">Εγγραφή</CardTitle>
-            <CardDescription className="text-white/70">Δημιουργία Λογαριασμού</CardDescription>
+            <CardTitle className="text-white">Είσοδος</CardTitle>
+            <CardDescription className="text-white/70">Συνδεθείτε στον λογαριασμό σας</CardDescription>
           </CardHeader>
           
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-white">Username</Label>
+                <Label htmlFor="username" className="text-white">Όνομα Χρήστη</Label>
                 <Input 
                   id="username"
                   type="text" 
-                  placeholder="your-username" 
+                  placeholder="username" 
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
@@ -76,7 +76,7 @@ const Login = () => {
               
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-white">Password</Label>
+                  <Label htmlFor="password" className="text-white">Κωδικός</Label>
                 </div>
                 <Input 
                   id="password"
@@ -90,9 +90,9 @@ const Login = () => {
               </div>
 
               <div className="text-sm text-white/70">
-                <p>Demo accounts:</p>
-                <p>- Admin: admin (any password)</p>
-                <p>- User: user (any password)</p>
+                <p>Δοκιμαστικοί λογαριασμοί:</p>
+                <p>- Admin: admin@example.com (οποιοσδήποτε κωδικός)</p>
+                <p>- User: user@example.com (οποιοσδήποτε κωδικός)</p>
               </div>
             </CardContent>
             
@@ -102,11 +102,11 @@ const Login = () => {
                 className="w-full bg-white text-blue-900 hover:bg-blue-50"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Signing in...' : 'Εγγραφή'}
+                {isSubmitting ? 'Σύνδεση...' : 'Είσοδος'}
               </Button>
               
               <div className="text-center text-sm text-white">
-                Δεν έχετε Λογαρισμό;{' '}
+                Δεν έχετε λογαριασμό;{' '}
                 <Link to="/register" className="text-white hover:text-white/90 font-medium">
                   Εγγραφή
                 </Link>
@@ -117,7 +117,7 @@ const Login = () => {
         
         <div className="text-center mt-8">
           <Link to="/" className="text-sm text-white hover:text-white/90">
-            ← Back to Home
+            ← Επιστροφή στην αρχική
           </Link>
         </div>
       </div>

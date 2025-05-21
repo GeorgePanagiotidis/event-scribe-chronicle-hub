@@ -31,8 +31,8 @@ const Index = () => {
           
           <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-2xl p-8">
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-medium text-white">Event Reporting System</h2>
-              <p className="text-white/70 mt-2">Secure access to your reports</p>
+              <h2 className="text-2xl font-medium text-white">ΗΜΕΡΟΛΟΓΙΟ ΚΑΤΑΓΡΑΦΗΣ ΣΥΜΒΑΝΤΩΝ</h2>
+              <p className="text-white/70 mt-2">Ασφαλής είσοδος στην εφαρμογή</p>
             </div>
             
             <div className="flex flex-col space-y-4">
@@ -41,7 +41,7 @@ const Index = () => {
                 className="bg-white text-blue-900 hover:bg-blue-50 w-full transition-all" 
                 onClick={() => navigate('/login')}
               >
-                Log In
+                Είσοδος
               </Button>
               
               <Button 
@@ -50,13 +50,13 @@ const Index = () => {
                 className="border-white text-white hover:bg-white/20 w-full transition-all" 
                 onClick={() => navigate('/register')}
               >
-                Sign Up
+                Εγγραφή
               </Button>
             </div>
           </div>
           
           <div className="mt-8 text-center text-white/50 text-sm">
-            <p>Local Area Network Event Reporting Platform</p>
+            <p>Σύστημα Καταγραφής Συμβάντων 473 ΤΕΠΠ</p>
           </div>
         </div>
       </div>

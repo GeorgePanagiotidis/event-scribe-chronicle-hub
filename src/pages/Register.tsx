@@ -30,22 +30,22 @@ const Register = () => {
     
     // Validation
     if (!name || !username || !password) {
-      toast.error('Please fill in all required fields');
+      toast.error('Παρακαλώ συμπληρώστε όλα τα υποχρεωτικά πεδία');
       return;
     }
     
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error('Οι κωδικοί δεν ταιριάζουν');
       return;
     }
     
     setIsSubmitting(true);
     
     try {
-      // Pass username instead of email
       const success = await register(name, username, password);
       if (success) {
-        navigate('/dashboard');
+        toast.success('Ο λογαριασμός σας δημιουργήθηκε. Περιμένετε την έγκριση από τον διαχειριστή.');
+        navigate('/login');
       }
     } finally {
       setIsSubmitting(false);
@@ -66,7 +66,7 @@ const Register = () => {
         <Card className="border border-white/10 bg-white/10 backdrop-blur-lg shadow-lg">
           <CardHeader>
             <CardTitle className="text-white">Εγγραφή</CardTitle>
-            <CardDescription className="text-white/70">Δημιουργία Λογαριασμού</CardDescription>
+            <CardDescription className="text-white/70">Δημιουργία νέου λογαριασμού</CardDescription>
           </CardHeader>
           
           <form onSubmit={handleSubmit}>
@@ -75,7 +75,7 @@ const Register = () => {
                 <Label htmlFor="name" className="text-white">Βαθμός και Ονοματεπώνυμο</Label>
                 <Input 
                   id="name"
-                  placeholder="John Doe" 
+                  placeholder="πχ. Επχίας Παπαδόπουλος Κωνσταντίνος" 
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
@@ -84,11 +84,11 @@ const Register = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-white">Username</Label>
+                <Label htmlFor="username" className="text-white">Όνομα Χρήστη</Label>
                 <Input 
                   id="username"
                   type="text" 
-                  placeholder="johndoe" 
+                  placeholder="username" 
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
@@ -97,7 +97,7 @@ const Register = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-white">Password</Label>
+                <Label htmlFor="password" className="text-white">Κωδικός</Label>
                 <Input 
                   id="password"
                   type="password" 
@@ -110,7 +110,7 @@ const Register = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-white">Confirm Password</Label>
+                <Label htmlFor="confirmPassword" className="text-white">Επιβεβαίωση Κωδικού</Label>
                 <Input 
                   id="confirmPassword"
                   type="password" 
@@ -129,13 +129,13 @@ const Register = () => {
                 className="w-full bg-white text-blue-900 hover:bg-blue-50"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Creating Account...' : 'Εγγραφή'}
+                {isSubmitting ? 'Δημιουργία...' : 'Εγγραφή'}
               </Button>
               
               <div className="text-center text-sm text-white">
-                Δεν έχετε Λογαρισμό;{' '}
+                Έχετε ήδη λογαριασμό;{' '}
                 <Link to="/login" className="text-white hover:text-white/90 font-medium">
-                  Εγγραφή
+                  Είσοδος
                 </Link>
               </div>
             </CardFooter>
@@ -144,7 +144,7 @@ const Register = () => {
         
         <div className="text-center mt-8">
           <Link to="/" className="text-sm text-white hover:text-white/90">
-            ← Back to Home
+            ← Επιστροφή στην αρχική
           </Link>
         </div>
       </div>
