@@ -6,6 +6,7 @@ export interface Event {
   title: string;
   date: Date;
   time: string;
+  endTime?: string;
   description: string;
   notes: string;
   imageUrls: string[];
@@ -13,6 +14,7 @@ export interface Event {
   createdById: string;
   location?: string;
   category?: string;
+  position?: string;
 }
 
 // Mock event data
@@ -22,12 +24,13 @@ const MOCK_EVENTS: Event[] = [
     title: 'Team Meeting',
     date: new Date(2025, 4, 19), // May 19, 2025
     time: '09:00',
+    endTime: '10:00',
     description: 'Weekly team sync meeting to discuss project progress',
     notes: 'Remember to prepare status report',
     imageUrls: ['/placeholder.svg'],
     createdBy: 'Admin User',
     createdById: '1',
-    location: 'Conference Room A',
+    location: 'ΕΦ ΠΛΑΓΙΕΣ',
     category: 'meeting'
   },
   {
@@ -35,12 +38,13 @@ const MOCK_EVENTS: Event[] = [
     title: 'System Maintenance',
     date: new Date(2025, 4, 19), // May 19, 2025
     time: '14:30',
+    endTime: '15:30',
     description: 'Scheduled maintenance of the server infrastructure',
     notes: 'Expected downtime: 1 hour',
     imageUrls: ['/placeholder.svg'],
     createdBy: 'Admin User',
     createdById: '1',
-    location: 'Server Room',
+    location: 'ΕΦ ΓΕΜΙΣΤΗΣ',
     category: 'critical'
   },
   {
@@ -48,12 +52,13 @@ const MOCK_EVENTS: Event[] = [
     title: 'Client Presentation',
     date: new Date(2025, 4, 20), // May 20, 2025
     time: '11:00',
+    endTime: '12:00',
     description: 'Presentation of the new product features to the client',
     notes: 'Make sure to prepare demo environment',
     imageUrls: ['/placeholder.svg'],
     createdBy: 'Regular User',
     createdById: '2',
-    location: 'Meeting Room B',
+    location: 'ΕΠΟΧΟΥΜΕΝΟ',
     category: 'presentation'
   }
 ];

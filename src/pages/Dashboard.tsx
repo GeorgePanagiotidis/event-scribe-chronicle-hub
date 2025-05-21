@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { useEvents } from "@/hooks/use-events";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
-import { Calendar } from "lucide-react";
+import { Calendar, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PageHeader } from "@/components/PageHeader";
+import { useAuth } from "@/contexts/auth";
 
 const Dashboard = () => {
   const { events, isLoading } = useEvents();
+  const { isAdmin } = useAuth();
 
   // Get today's events
   const todayEvents = React.useMemo(() => {
@@ -56,13 +58,21 @@ const Dashboard = () => {
           </Card>
         </div>
         
-        <div className="mt-6 flex gap-4">
+        <div className="mt-6 flex flex-wrap gap-4">
           <Link to="/events/new">
-            <Button>Create Event</Button>
+            <Button>Νέο Συμβάν</Button>
           </Link>
           <Link to="/calendar">
             <Button variant="outline">View Calendar</Button>
           </Link>
+          {isAdmin && (
+            <Link to="/users">
+              <Button variant="outline" className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                <span>Διαχείριση Χρηστών</span>
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </Layout>

@@ -1,9 +1,10 @@
 
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Phone } from "lucide-react";
+import { Phone, Users } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useAuth } from "@/contexts/auth";
 
 interface PageHeaderProps {
   title: string;
@@ -11,6 +12,7 @@ interface PageHeaderProps {
 
 export const PageHeader: React.FC<PageHeaderProps> = ({ title }) => {
   const [open, setOpen] = useState(false);
+  const { isAdmin } = useAuth();
 
   return (
     <div className="w-full">
@@ -35,6 +37,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ title }) => {
               <TabsTrigger value="calendar" asChild>
                 <Link to="/calendar" className="px-4">Ημερολόγιο</Link>
               </TabsTrigger>
+              {isAdmin && (
+                <TabsTrigger value="users" asChild>
+                  <Link to="/users" className="px-4">Διαχείριση Χρηστών</Link>
+                </TabsTrigger>
+              )}
               <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
                   <TabsTrigger value="contact" className="px-4">Επικοινωνία</TabsTrigger>

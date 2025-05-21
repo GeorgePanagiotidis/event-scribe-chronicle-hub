@@ -1,8 +1,9 @@
+
 import React from "react";
 import { Layout } from "@/components/Layout";
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -12,7 +13,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Clock } from 'lucide-react';
 import { Event, deleteEvent, getEvent } from '@/services/eventService';
 import { 
   AlertDialog,
@@ -109,13 +110,13 @@ const EventView = () => {
 
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto p-4 space-y-6">
         <div className="flex items-center justify-between">
           <Button
             variant="outline"
             onClick={() => navigate('/dashboard')}
           >
-            ← Back to Dashboard
+            ← Επιστροφή στην Αρχική
           </Button>
           
           {canEdit && (
@@ -124,29 +125,28 @@ const EventView = () => {
                 variant="outline" 
                 onClick={() => navigate(`/events/edit/${id}`)}
               >
-                Edit Event
+                Επεξεργασία
               </Button>
               
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive">Delete Event</Button>
+                  <Button variant="destructive">Διαγραφή</Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogTitle>Είστε σίγουροι;</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the event and
-                      all associated data.
+                      Αυτή η ενέργεια δεν μπορεί να αναιρεθεί. Το συμβάν και όλα τα συνδεδεμένα δεδομένα θα διαγραφούν μόνιμα.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>Ακύρωση</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleDelete}
                       className="bg-red-600 hover:bg-red-700"
                       disabled={isDeleting}
                     >
-                      {isDeleting ? 'Deleting...' : 'Delete'}
+                      {isDeleting ? 'Διαγραφή...' : 'Διαγραφή'}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -160,46 +160,60 @@ const EventView = () => {
             <div>
               <CardTitle className="text-2xl">{event.title}</CardTitle>
               <div className="text-sm text-muted-foreground mt-2">
-                Created by {event.createdBy}
+                <div>Καταχωρήθηκε από: {event.createdBy}</div>
+                {event.location && <div>Θέση: {event.location}</div>}
               </div>
             </div>
-            <div className="flex items-center text-event-blue-600">
-              <CalendarIcon className="mr-2 h-5 w-5" />
-              <span>{format(new Date(event.date), 'MMMM d, yyyy')} at {event.time}</span>
+            <div className="flex flex-col items-end text-event-blue-600">
+              <div className="flex items-center">
+                <CalendarIcon className="mr-2 h-5 w-5" />
+                <span>{format(new Date(event.date), 'dd/MM/yyyy')}</span>
+              </div>
+              <div className="flex items-center mt-1">
+                <Clock className="mr-2 h-5 w-5" />
+                <span>Έναρξη: {event.time}</span>
+              </div>
+              {event.endTime && (
+                <div className="flex items-center mt-1">
+                  <Clock className="mr-2 h-5 w-5" />
+                  <span>Λήξη: {event.endTime}</span>
+                </div>
+              )}
             </div>
           </CardHeader>
           
           <CardContent className="pt-6 space-y-6">
             <div>
-              <h3 className="text-lg font-semibold mb-2">Description</h3>
+              <h3 className="text-lg font-semibold mb-2">Περιγραφή</h3>
               <p className="whitespace-pre-line">{event.description}</p>
             </div>
             
-            {event.notes && (
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Additional Notes</h3>
-                <p className="whitespace-pre-line">{event.notes}</p>
-              </div>
-            )}
-            
+            {/* Image Preview */}
             <div>
-              <h3 className="text-lg font-semibold mb-3">Images</h3>
+              <h3 className="text-lg font-semibold mb-3">Εικόνες</h3>
               {event.imageUrls && event.imageUrls.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   {event.imageUrls.map((url, index) => (
                     <div key={index} className="border rounded-md overflow-hidden">
                       <img 
                         src={url} 
                         alt={`Event image ${index + 1}`}
-                        className="w-full h-48 object-cover"
+                        className="w-full max-h-96 object-contain"
                       />
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground">No images attached to this event</p>
+                <p className="text-muted-foreground">Δεν υπάρχουν εικόνες για αυτό το συμβάν</p>
               )}
             </div>
+            
+            {event.notes && (
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Πρόσθετες Σημειώσεις</h3>
+                <p className="whitespace-pre-line">{event.notes}</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
