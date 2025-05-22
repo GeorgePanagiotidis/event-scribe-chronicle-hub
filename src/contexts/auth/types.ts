@@ -27,4 +27,5 @@ export interface AuthContextType {
   getPendingUsers: () => User[];
   addUser: (name: string, email: string, role: UserRole, password: string) => Promise<boolean>;
   deleteUser: (userId: string) => Promise<boolean>;
+  getUsername: (email: string) => string;
 }

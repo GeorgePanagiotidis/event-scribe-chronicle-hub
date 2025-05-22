@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { User, UserRole, AuthContextType } from './types';
@@ -10,6 +9,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>(MOCK_USERS);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Extract username from email (everything before @)
+  const getUsername = (email: string): string => {
+    return email.split('@')[0];
+  };
 
   useEffect(() => {
     // Check for existing session in localStorage
@@ -242,7 +246,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     getAllUsers,
     getPendingUsers,
     addUser,
-    deleteUser
+    deleteUser,
+    getUsername
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

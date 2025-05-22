@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getEvents, Event } from "@/services/eventService";
 
 export function useEvents() {
@@ -7,22 +7,26 @@ export function useEvents() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        setIsLoading(true);
-        const eventsData = await getEvents();
-        setEvents(eventsData);
-      } catch (err) {
-        console.error("Error fetching events:", err);
-        setError(err instanceof Error ? err : new Error("Failed to fetch events"));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchEvents();
+  const fetchEvents = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const eventsData = await getEvents();
+      setEvents(eventsData);
+    } catch (err) {
+      console.error("Error fetching events:", err);
+      setError(err instanceof Error ? err : new Error("Failed to fetch events"));
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  return { events, isLoading, error };
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
+
+  const mutateEvents = () => {
+    fetchEvents();
+  };
+
+  return { events, isLoading, error, mutateEvents };
 }
