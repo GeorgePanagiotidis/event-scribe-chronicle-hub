@@ -26,7 +26,7 @@ const Index = () => {
         <div className="w-full max-w-md px-4">
           {/* Main title */}
           <h1 className="mb-8 text-5xl md:text-6xl font-bold text-white text-center tracking-wider">
-            ΚΕ.Ε.ΗΠ.ΕΠ
+            ΚΕ.Ε.Η.ΕΠ
           </h1>
           
           <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-2xl p-8">
