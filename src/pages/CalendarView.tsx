@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -164,7 +163,7 @@ const CalendarView = () => {
               <Card>
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold">{currentEvent.title}</h2>
+                    <h2 className="text-2xl font-bold">{currentEvent.title}</h2>
                     {currentEvent.category && (
                       <Badge variant={currentEvent.category === 'critical' ? 'destructive' : 'outline'}>
                         {currentEvent.category}
@@ -174,16 +173,14 @@ const CalendarView = () => {
                   
                   <div className="grid gap-4">
                     <div>
+                      <h3 className="font-medium mb-1">Position</h3>
+                      <p className="text-lg">{currentEvent.position || "Θέση μη προσδιορισμένη"}</p>
+                    </div>
+
+                    <div>
                       <h3 className="font-medium mb-1">Description</h3>
                       <p>{currentEvent.description}</p>
                     </div>
-                    
-                    {currentEvent.position && (
-                      <div>
-                        <h3 className="font-medium mb-1">Position</h3>
-                        <p>{currentEvent.position}</p>
-                      </div>
-                    )}
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div>
