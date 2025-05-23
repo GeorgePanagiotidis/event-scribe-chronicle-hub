@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -118,10 +119,7 @@ const CalendarView = () => {
                             </Badge>
                           )}
                         </div>
-                        <p className="text-muted-foreground mt-1">{event.position || "Θέση μη προσδιορισμένη"}</p>
-                        <div className="mt-2 text-sm text-muted-foreground">
-                          {event.location && <p>📍 {event.location}</p>}
-                        </div>
+                        <p className="text-muted-foreground mt-1">{event.location || "Τοποθεσία μη προσδιορισμένη"}</p>
                         <div className="mt-3">
                           <Button onClick={viewEvent}>View Event</Button>
                         </div>
@@ -173,8 +171,8 @@ const CalendarView = () => {
                   
                   <div className="grid gap-4">
                     <div>
-                      <h3 className="font-medium mb-1">Position</h3>
-                      <p className="text-lg">{currentEvent.position || "Θέση μη προσδιορισμένη"}</p>
+                      <h3 className="font-medium mb-1">Location</h3>
+                      <p className="text-lg">{currentEvent.location || "Τοποθεσία μη προσδιορισμένη"}</p>
                     </div>
 
                     <div>
@@ -188,8 +186,8 @@ const CalendarView = () => {
                         <p>{currentEvent.time}</p>
                       </div>
                       <div>
-                        <h3 className="font-medium mb-1">Location</h3>
-                        <p>{currentEvent.location || 'No location specified'}</p>
+                        <h3 className="font-medium mb-1">Date</h3>
+                        <p>{format(new Date(currentEvent.date), 'MMMM d, yyyy')}</p>
                       </div>
                     </div>
                     
