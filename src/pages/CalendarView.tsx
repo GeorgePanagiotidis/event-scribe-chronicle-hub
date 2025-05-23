@@ -119,7 +119,7 @@ const CalendarView = () => {
                             </Badge>
                           )}
                         </div>
-                        <p className="text-muted-foreground mt-1">{event.description}</p>
+                        <p className="text-muted-foreground mt-1">{event.position || "Θέση μη προσδιορισμένη"}</p>
                         <div className="mt-2 text-sm text-muted-foreground">
                           {event.location && <p>📍 {event.location}</p>}
                         </div>
@@ -177,6 +177,13 @@ const CalendarView = () => {
                       <h3 className="font-medium mb-1">Description</h3>
                       <p>{currentEvent.description}</p>
                     </div>
+                    
+                    {currentEvent.position && (
+                      <div>
+                        <h3 className="font-medium mb-1">Position</h3>
+                        <p>{currentEvent.position}</p>
+                      </div>
+                    )}
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div>

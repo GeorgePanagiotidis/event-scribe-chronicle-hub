@@ -31,7 +31,8 @@ const MOCK_EVENTS: Event[] = [
     createdBy: 'Admin User',
     createdById: '1',
     location: 'ΕΦ ΠΛΑΓΙΕΣ',
-    category: 'meeting'
+    category: 'meeting',
+    position: 'Ανατολικό τμήμα'
   },
   {
     id: '2',
@@ -45,7 +46,8 @@ const MOCK_EVENTS: Event[] = [
     createdBy: 'Admin User',
     createdById: '1',
     location: 'ΕΦ ΓΕΜΙΣΤΗΣ',
-    category: 'critical'
+    category: 'critical',
+    position: 'Δυτική πλευρά'
   },
   {
     id: '3',
@@ -59,7 +61,8 @@ const MOCK_EVENTS: Event[] = [
     createdBy: 'Regular User',
     createdById: '2',
     location: 'ΕΠΟΧΟΥΜΕΝΟ',
-    category: 'presentation'
+    category: 'presentation',
+    position: 'Κεντρική περιοχή'
   }
 ];
 
