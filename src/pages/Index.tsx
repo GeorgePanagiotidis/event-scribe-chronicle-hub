@@ -17,7 +17,7 @@ const Index = () => {
   }, [isAuthenticated, navigate]);
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
+    <div className="relative h-screen w-full overflow-hidden flex flex-col">
       {/* Animated network background */}
       <NetworkBackground />
       
@@ -59,6 +59,11 @@ const Index = () => {
             <p>Σύστημα Καταγραφής Συμβάντων 473 ΤΕΠΠ</p>
           </div>
         </div>
+      </div>
+      
+      {/* Footer */}
+      <div className="absolute bottom-0 left-0 right-0 z-10 py-4 px-6 text-center text-white/70 text-sm border-t border-white/10 backdrop-blur-sm bg-background/30">
+        <p>Created by Επ.οπ Επχίας (ΔΒ) Παναγιωτίδης Γεώργιος</p>
       </div>
     </div>
   );

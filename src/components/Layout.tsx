@@ -22,13 +22,13 @@ export function Layout({ children }: LayoutProps) {
   };
   
   return (
-    <div className="min-h-screen w-full bg-background relative">
+    <div className="min-h-screen w-full bg-background relative flex flex-col">
       {/* Network Background */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <NetworkBackground />
       </div>
       
-      <div className="flex flex-col h-full relative z-10">
+      <div className="flex flex-col h-full relative z-10 flex-grow">
         {/* Main Content */}
         <div className="flex-1 flex flex-col">
           {/* User info and logout in top right corner */}
@@ -63,6 +63,11 @@ export function Layout({ children }: LayoutProps) {
 
           {/* Page Content */}
           <main className="flex-1">{children}</main>
+          
+          {/* Footer */}
+          <footer className="relative z-10 py-4 px-6 text-center text-white/70 text-sm mt-auto border-t border-white/10 backdrop-blur-sm bg-background/30">
+            <p>Created by Επ.οπ Επχίας (ΔΒ) Παναγιωτίδης Γεώργιος</p>
+          </footer>
         </div>
       </div>
     </div>
