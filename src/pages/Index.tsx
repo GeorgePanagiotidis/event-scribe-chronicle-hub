@@ -46,8 +46,7 @@ const Index = () => {
               
               <Button 
                 size="lg" 
-                variant="outline" 
-                className="border-white text-white hover:bg-white/20 w-full transition-all" 
+                className="bg-white text-blue-900 hover:bg-blue-50 w-full transition-all" 
                 onClick={() => navigate('/register')}
               >
                 Εγγραφή
