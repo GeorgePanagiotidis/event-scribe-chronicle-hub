@@ -5,6 +5,16 @@ import { useAuth } from '@/contexts/auth';
 import { Button } from '@/components/ui/button';
 import NetworkBackground from '@/components/NetworkBackground';
 
+/**
+ * Index - Landing page component
+ * 
+ * This component serves as the main entry point for the application, showing:
+ * - A visually engaging network background
+ * - App title and description
+ * - Authentication options (login/register)
+ * 
+ * It automatically redirects authenticated users to the dashboard.
+ */
 const Index = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -21,7 +31,7 @@ const Index = () => {
       {/* Animated network background */}
       <NetworkBackground />
       
-      {/* Content overlay */}
+      {/* Content overlay - Centered on screen with login/registration options */}
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
         <div className="w-full max-w-md px-4">
           {/* Main title */}
@@ -29,12 +39,14 @@ const Index = () => {
             ΚΕ.Ε.Η.ΕΠ
           </h1>
           
+          {/* Authentication card with translucent effect */}
           <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-2xl p-8">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-medium text-white">ΗΜΕΡΟΛΟΓΙΟ ΚΑΤΑΓΡΑΦΗΣ ΣΥΜΒΑΝΤΩΝ</h2>
               <p className="text-white/70 mt-2">Ασφαλής είσοδος στην εφαρμογή</p>
             </div>
             
+            {/* Authentication buttons */}
             <div className="flex flex-col space-y-4">
               <Button 
                 size="lg" 
@@ -54,13 +66,14 @@ const Index = () => {
             </div>
           </div>
           
+          {/* Footer text with system information */}
           <div className="mt-8 text-center text-white/50 text-sm">
             <p>Σύστημα Καταγραφής Συμβάντων 473 ΤΕΠΠ</p>
           </div>
         </div>
       </div>
       
-      {/* Footer */}
+      {/* Footer with attribution */}
       <div className="absolute bottom-0 left-0 right-0 z-10 py-4 px-6 text-center text-white/70 text-sm border-t border-white/10 backdrop-blur-sm bg-background/30">
         <p>Created by Επ.οπ Επχίας (ΔΒ) Παναγιωτίδης Γεώργιος</p>
       </div>

@@ -11,13 +11,28 @@ import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 
+/**
+ * CalendarView - Event calendar and detail view component
+ * 
+ * This component provides:
+ * - A monthly calendar view with event indicators
+ * - A list of events for the selected date
+ * - A detailed view of individual events
+ * - Navigation between calendar and detail views
+ */
 const CalendarView = () => {
+  // State for calendar interaction and view toggling
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [showCalendar, setShowCalendar] = useState(true);
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
+  
+  // Retrieve events data from centralized hook
   const { events } = useEvents();
   
-  // Group events by date
+  /**
+   * Group events by date for efficient lookup
+   * Formats dates consistently for comparison
+   */
   const eventsByDate = React.useMemo(() => {
     const grouped: Record<string, Event[]> = {};
     
@@ -32,7 +47,10 @@ const CalendarView = () => {
     return grouped;
   }, [events]);
   
-  // Get events for selected date
+  /**
+   * Get events for the currently selected date
+   * Returns filtered array of event objects
+   */
   const selectedDateEvents = React.useMemo(() => {
     if (!selectedDate) return [];
     
@@ -40,25 +58,36 @@ const CalendarView = () => {
     return eventsByDate[dateString] || [];
   }, [selectedDate, eventsByDate]);
   
-  // Handle viewing a specific event
+  /**
+   * View event details handler
+   * Switches from calendar view to event detail view
+   */
   const viewEvent = () => {
     setShowCalendar(false);
     setCurrentEventIndex(0);
   };
   
-  // Go to next event
+  /**
+   * Navigate to next event in the selected date's events
+   * Used in the event detail view for browsing multiple events
+   */
   const goToNextEvent = () => {
     if (currentEventIndex < selectedDateEvents.length - 1) {
       setCurrentEventIndex(prev => prev + 1);
     }
   };
   
-  // Go back to calendar
+  /**
+   * Return to calendar view from event detail view
+   */
   const goBackToCalendar = () => {
     setShowCalendar(true);
   };
   
-  // Generate content for calendar days with events
+  /**
+   * Generate content for calendar days with events
+   * Adds visual indicators for dates that have events
+   */
   const getDayContent = (day: Date) => {
     const dateString = format(day, 'yyyy-MM-dd');
     const dayEvents = eventsByDate[dateString];
@@ -72,7 +101,7 @@ const CalendarView = () => {
     );
   };
   
-  // Get current event
+  // Get current event object for detail view
   const currentEvent = selectedDateEvents[currentEventIndex];
   
   return (
@@ -81,8 +110,9 @@ const CalendarView = () => {
       
       <div className="container mx-auto p-4 md:p-6">
         {showCalendar ? (
+          // Calendar View
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Calendar */}
+            {/* Calendar widget */}
             <div className="bg-card text-card-foreground shadow-lg rounded-lg p-4 lg:col-span-1">
               <Calendar
                 mode="single"
@@ -100,7 +130,7 @@ const CalendarView = () => {
               />
             </div>
             
-            {/* Events for Selected Date */}
+            {/* Events list for selected date */}
             <div className="lg:col-span-2">
               <h2 className="text-xl font-semibold mb-4">
                 Events for {selectedDate ? format(selectedDate, 'MMMM d, yyyy') : 'Selected Date'}
@@ -133,8 +163,9 @@ const CalendarView = () => {
             </div>
           </div>
         ) : (
+          // Event Detail View
           <div className="max-w-3xl mx-auto">
-            {/* Event Detail View */}
+            {/* Navigation header */}
             <div className="mb-4 flex items-center justify-between">
               <Button variant="outline" onClick={goBackToCalendar}>
                 <CalendarIcon className="mr-2 h-4 w-4" />
@@ -157,6 +188,7 @@ const CalendarView = () => {
               </div>
             </div>
             
+            {/* Event detail card */}
             {currentEvent && (
               <Card>
                 <CardContent className="pt-6">
@@ -170,16 +202,19 @@ const CalendarView = () => {
                   </div>
                   
                   <div className="grid gap-4">
+                    {/* Location */}
                     <div>
                       <h3 className="font-medium mb-1">Location</h3>
                       <p className="text-lg">{currentEvent.location || "Τοποθεσία μη προσδιορισμένη"}</p>
                     </div>
 
+                    {/* Description */}
                     <div>
                       <h3 className="font-medium mb-1">Description</h3>
                       <p>{currentEvent.description}</p>
                     </div>
                     
+                    {/* Time and date information */}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <h3 className="font-medium mb-1">Time</h3>
@@ -191,6 +226,7 @@ const CalendarView = () => {
                       </div>
                     </div>
                     
+                    {/* Notes (if available) */}
                     {currentEvent.notes && (
                       <div>
                         <h3 className="font-medium mb-1">Notes</h3>
@@ -198,6 +234,7 @@ const CalendarView = () => {
                       </div>
                     )}
                     
+                    {/* Images gallery (if available) */}
                     {currentEvent.imageUrls && currentEvent.imageUrls.length > 0 && (
                       <div>
                         <h3 className="font-medium mb-1">Images</h3>

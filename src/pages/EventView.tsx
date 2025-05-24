@@ -28,16 +28,36 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from 'sonner';
 
+/**
+ * EventView - Detailed event viewing component
+ * 
+ * This component:
+ * - Fetches and displays complete details for a single event
+ * - Handles loading and error states
+ * - Provides edit and delete options for authorized users
+ * - Shows event metadata, description, and associated images
+ * - Implements delete confirmation to prevent accidental removal
+ */
 const EventView = () => {
+  // Authentication and navigation context
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+  // Event ID from URL parameters
   const { id } = useParams<{ id: string }>();
   
+  // Component state
   const [event, setEvent] = useState<Event | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  /**
+   * On component mount:
+   * - Check authentication
+   * - Fetch event details by ID
+   * - Handle error states with appropriate redirects
+   */
   useEffect(() => {
+    // Redirect unauthenticated users to login
     if (!isAuthenticated) {
       navigate('/login');
       return;
@@ -51,6 +71,7 @@ const EventView = () => {
           return;
         }
         
+        // Fetch event data
         const eventData = await getEvent(id);
         if (eventData) {
           setEvent(eventData);
@@ -70,6 +91,13 @@ const EventView = () => {
     fetchEvent();
   }, [isAuthenticated, navigate, id]);
 
+  /**
+   * Event deletion handler
+   * - Sets deletion state for UI feedback
+   * - Calls service method to delete from backend
+   * - Shows success/error feedback with toast notifications
+   * - Navigates back to dashboard after successful deletion
+   */
   const handleDelete = async () => {
     if (!id) return;
     
@@ -86,8 +114,10 @@ const EventView = () => {
     }
   };
 
+  // Check if current user can edit/delete this event (creator or admin)
   const canEdit = user && event && (user.id === event.createdById || user.role === 'admin');
 
+  // Loading state UI
   if (isLoading) {
     return (
       <Layout>
@@ -98,6 +128,7 @@ const EventView = () => {
     );
   }
 
+  // Error state UI (event not found)
   if (!event) {
     return (
       <Layout>
@@ -111,7 +142,9 @@ const EventView = () => {
   return (
     <Layout>
       <div className="max-w-4xl mx-auto p-4 space-y-6">
+        {/* Navigation and action buttons */}
         <div className="flex items-center justify-between">
+          {/* Back button */}
           <Button
             variant="outline"
             onClick={() => navigate('/dashboard')}
@@ -119,6 +152,7 @@ const EventView = () => {
             ← Επιστροφή στην Αρχική
           </Button>
           
+          {/* Edit and delete buttons (for authorized users) */}
           {canEdit && (
             <div className="flex space-x-2">
               <Button
@@ -128,6 +162,7 @@ const EventView = () => {
                 Επεξεργασία
               </Button>
               
+              {/* Delete confirmation dialog */}
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive">Διαγραφή</Button>
@@ -155,7 +190,9 @@ const EventView = () => {
           )}
         </div>
 
+        {/* Event details card */}
         <Card className="shadow-lg border-2 border-blue-100">
+          {/* Card header with event title, creator, and date/time */}
           <CardHeader className="bg-blue-50 border-b flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-2xl">{event.title}</CardTitle>
@@ -182,13 +219,15 @@ const EventView = () => {
             </div>
           </CardHeader>
           
+          {/* Card content with event details */}
           <CardContent className="pt-6 space-y-6">
+            {/* Description section */}
             <div>
               <h3 className="text-lg font-semibold mb-2">Περιγραφή</h3>
               <p className="whitespace-pre-line">{event.description}</p>
             </div>
             
-            {/* Image Preview */}
+            {/* Image gallery section */}
             <div>
               <h3 className="text-lg font-semibold mb-3">Εικόνες</h3>
               {event.imageUrls && event.imageUrls.length > 0 ? (
@@ -208,6 +247,7 @@ const EventView = () => {
               )}
             </div>
             
+            {/* Notes section (if available) */}
             {event.notes && (
               <div>
                 <h3 className="text-lg font-semibold mb-2">Πρόσθετες Σημειώσεις</h3>

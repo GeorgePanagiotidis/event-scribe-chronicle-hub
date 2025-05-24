@@ -23,12 +23,24 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+/**
+ * Dashboard - Main application dashboard component
+ * 
+ * This component:
+ * - Shows today's events at a glance
+ * - Provides quick navigation to other parts of the application
+ * - Allows administrators to delete events
+ * - Displays loading states and empty states appropriately
+ */
 const Dashboard = () => {
   const { events, isLoading, mutateEvents } = useEvents();
   const { isAdmin } = useAuth();
   const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
 
-  // Get today's events
+  /**
+   * Filter events to show only today's events
+   * Uses date-fns for consistent date formatting
+   */
   const todayEvents = React.useMemo(() => {
     if (!events?.length) return [];
     const today = format(new Date(), 'yyyy-MM-dd');
@@ -37,6 +49,13 @@ const Dashboard = () => {
     );
   }, [events]);
 
+  /**
+   * Event deletion handler
+   * - Sets UI state for visual feedback
+   * - Calls service method to delete from backend
+   * - Updates local cache via mutation
+   * - Displays success/error toasts
+   */
   const handleDeleteEvent = async (eventId: string) => {
     setDeletingEventId(eventId);
     try {
@@ -57,6 +76,7 @@ const Dashboard = () => {
       
       <div className="container mx-auto p-4">
         <div className="grid grid-cols-1 gap-6">
+          {/* Today's Events Card */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -65,19 +85,23 @@ const Dashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              {/* Loading state */}
               {isLoading ? (
                 <p>Loading events...</p>
               ) : todayEvents.length > 0 ? (
+                // List of today's events
                 <div className="space-y-3">
                   {todayEvents.map(event => (
                     <div key={event.id} className="border-b pb-2 last:border-0">
                       <div className="flex justify-between">
+                        {/* Event title with link to details */}
                         <Link to={`/events/${event.id}`} className="hover:underline">
                           <h3 className="font-medium">{event.title}</h3>
                         </Link>
                         <div className="flex items-center gap-2">
                           <span className="text-sm text-muted-foreground">{event.time}</span>
                           
+                          {/* Delete button (admin only) */}
                           {isAdmin && (
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
@@ -110,24 +134,32 @@ const Dashboard = () => {
                           )}
                         </div>
                       </div>
+                      {/* Event description */}
                       <p className="text-sm text-muted-foreground">{event.description}</p>
                     </div>
                   ))}
                 </div>
               ) : (
+                // Empty state
                 <p>No events scheduled for today.</p>
               )}
             </CardContent>
           </Card>
         </div>
         
+        {/* Navigation buttons */}
         <div className="mt-6 flex flex-wrap gap-4">
+          {/* Create new event button */}
           <Link to="/events/new">
             <Button>Νέο Συμβάν</Button>
           </Link>
+          
+          {/* View calendar button */}
           <Link to="/calendar">
             <Button variant="outline">View Calendar</Button>
           </Link>
+          
+          {/* User management button (admin only) */}
           {isAdmin && (
             <Link to="/users">
               <Button variant="outline" className="flex items-center gap-2">

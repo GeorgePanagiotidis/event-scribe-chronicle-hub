@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Layout } from "@/components/Layout";
 import { useNavigate } from 'react-router-dom';
@@ -9,9 +10,23 @@ import ActiveUsersTab from '@/components/user-management/ActiveUsersTab';
 import PendingUsersTab from '@/components/user-management/PendingUsersTab';
 import AddUserTab from '@/components/user-management/AddUserTab';
 
+/**
+ * Interface for user data in the component
+ */
 interface UserData extends User {}
 
+/**
+ * UserManagement - Administrative user management component
+ * 
+ * This component:
+ * - Restricts access to administrators only
+ * - Provides tabs for active users, pending users, and adding new users
+ * - Handles user approval, rejection, role changes, and password resets
+ * - Manages user deletion
+ * - Uses tab-based navigation for different user management functions
+ */
 const UserManagement = () => {
+  // Authentication context with admin-specific methods
   const { 
     isAuthenticated, 
     isAdmin, 
@@ -27,6 +42,7 @@ const UserManagement = () => {
   } = useAuth();
   const navigate = useNavigate();
   
+  // Component state
   const [activeUsers, setActiveUsers] = useState<UserData[]>([]);
   const [pendingUsers, setPendingUsers] = useState<UserData[]>([]);
   const [newUser, setNewUser] = useState({ 
@@ -38,6 +54,12 @@ const UserManagement = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('active');
 
+  /**
+   * On component mount:
+   * - Check authentication and admin status
+   * - Redirect non-admins to dashboard
+   * - Load initial user data
+   */
   useEffect(() => {
     // Check if user is authenticated and an admin
     if (!isAuthenticated) {
@@ -54,11 +76,22 @@ const UserManagement = () => {
     loadUsers();
   }, [isAuthenticated, isAdmin, navigate]);
   
+  /**
+   * Load users from authentication context
+   * Updates both active and pending user lists
+   */
   const loadUsers = () => {
     setActiveUsers(getAllUsers());
     setPendingUsers(getPendingUsers());
   };
 
+  /**
+   * Add user form submission handler
+   * - Validates required fields
+   * - Creates new user with specified role
+   * - Resets form on success
+   * - Reloads user lists to reflect changes
+   */
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -87,6 +120,10 @@ const UserManagement = () => {
     setIsLoading(false);
   };
 
+  /**
+   * Change user role handler
+   * Prevents changing own role, updates user role in system
+   */
   const handleRoleChange = async (userId: string, newRole: UserRole) => {
     // Prevent changing own role
     if (userId === user?.id) {
@@ -100,6 +137,10 @@ const UserManagement = () => {
     }
   };
 
+  /**
+   * Delete user handler
+   * Removes user from system and updates lists
+   */
   const handleDeleteUser = async (userId: string) => {
     const success = await deleteUser(userId);
     if (success) {
@@ -107,6 +148,10 @@ const UserManagement = () => {
     }
   };
   
+  /**
+   * Approve pending user handler
+   * Grants account access to pending user
+   */
   const handleApproveUser = async (userId: string) => {
     const success = await approveUser(userId);
     if (success) {
@@ -114,6 +159,10 @@ const UserManagement = () => {
     }
   };
   
+  /**
+   * Reject pending user handler
+   * Denies account access to pending user
+   */
   const handleRejectUser = async (userId: string) => {
     const success = await rejectUser(userId);
     if (success) {
@@ -121,6 +170,10 @@ const UserManagement = () => {
     }
   };
   
+  /**
+   * Reset password handler
+   * Resets specified user's password to default
+   */
   const handleResetPassword = async (userId: string) => {
     const success = await resetUserPassword(userId);
     if (success) {
@@ -133,6 +186,7 @@ const UserManagement = () => {
       <PageHeader title="Διαχείριση Χρηστών" />
       
       <div className="container mx-auto px-4 py-6">
+        {/* Tab navigation for different user management functions */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="active">Ενεργοί Χρήστες</TabsTrigger>
