@@ -3,8 +3,9 @@ import { createClient } from '@supabase/supabase-js'
 
 // Supabase configuration for self-hosted instance
 // These URLs will point to your local Docker setup
-const supabaseUrl = process.env.VITE_SUPABASE_URL || 'http://localhost:8000'
-const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMAs_-EmCU'
+// Using import.meta.env instead of process.env for Vite compatibility
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'http://localhost:8000'
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMAs_-EmCU'
 
 // Create Supabase client instance
 // This client handles all communication with your self-hosted Supabase
