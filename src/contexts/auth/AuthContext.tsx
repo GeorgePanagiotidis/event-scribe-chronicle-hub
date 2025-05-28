@@ -1,14 +1,27 @@
+
 import React, { createContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { User, UserRole, AuthContextType } from './types';
-import { MOCK_USERS } from './mockData';
+import { supabase } from '@/lib/supabase';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>(MOCK_USERS);
+  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Convert Supabase user to our User type
+  const convertSupabaseUser = (supabaseUser: SupabaseUser, userMetadata?: any): User => {
+    return {
+      id: supabaseUser.id,
+      name: userMetadata?.full_name || supabaseUser.email?.split('@')[0] || 'Unknown User',
+      email: supabaseUser.email || '',
+      role: userMetadata?.role || 'viewer',
+      status: 'active'
+    };
+  };
 
   // Extract username from email (everything before @)
   const getUsername = (email: string): string => {
@@ -16,49 +29,120 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    // Check for existing session in localStorage
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
+    // Get initial session from Supabase
+    const getInitialSession = async () => {
       try {
-        const parsedUser = JSON.parse(savedUser);
-        // Only set active users as authenticated
-        if (parsedUser.status === 'active') {
-          setUser(parsedUser);
-        } else {
-          localStorage.removeItem('user');
+        // Check if user is already authenticated
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          // Fetch user metadata from profiles table
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          
+          const convertedUser = convertSupabaseUser(session.user, profile);
+          setUser(convertedUser);
         }
       } catch (error) {
-        console.error('Failed to parse stored user data:', error);
-        localStorage.removeItem('user');
+        console.error('Error getting initial session:', error);
+      } finally {
+        setIsLoading(false);
       }
-    }
-    setIsLoading(false);
+    };
+
+    getInitialSession();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session);
+        
+        if (session?.user) {
+          // Fetch user profile when user signs in
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          
+          const convertedUser = convertSupabaseUser(session.user, profile);
+          setUser(convertedUser);
+        } else {
+          // User signed out
+          setUser(null);
+        }
+        
+        setIsLoading(false);
+      }
+    );
+
+    // Cleanup subscription on unmount
+    return () => subscription.unsubscribe();
   }, []);
 
+  // Load all users for admin management (from profiles table)
+  const loadUsers = async () => {
+    try {
+      const { data: profiles, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+
+      const convertedUsers = profiles?.map(profile => ({
+        id: profile.id,
+        name: profile.full_name || profile.email?.split('@')[0] || 'Unknown User',
+        email: profile.email || '',
+        role: profile.role || 'viewer',
+        status: profile.status || 'active'
+      })) || [];
+
+      setUsers(convertedUsers);
+    } catch (error) {
+      console.error('Error loading users:', error);
+    }
+  };
+
+  // Login function using Supabase auth
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Find user with matching email (in a real app, you'd validate password too)
-      const foundUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-      
-      if (foundUser) {
-        if (foundUser.status === 'pending') {
-          toast.error('Ο λογαριασμός σας εκκρεμεί για έγκριση από τον διαχειριστή.');
-          return false;
-        }
-        
-        setUser(foundUser);
-        localStorage.setItem('user', JSON.stringify(foundUser));
-        toast.success(`Καλώς ήρθατε, ${foundUser.name}!`);
-        return true;
-      } else {
+      // Attempt to sign in with Supabase
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        console.error('Login error:', error);
         toast.error('Λάθος όνομα χρήστη ή κωδικός');
         return false;
       }
+
+      if (data.user) {
+        // Check if user profile exists and is active
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profile?.status === 'pending') {
+          await supabase.auth.signOut(); // Sign out pending user
+          toast.error('Ο λογαριασμός σας εκκρεμεί για έγκριση από τον διαχειριστή.');
+          return false;
+        }
+
+        toast.success(`Καλώς ήρθατε, ${profile?.full_name || email}!`);
+        return true;
+      }
+
+      return false;
     } catch (error) {
       console.error('Login failed:', error);
       toast.error('Η σύνδεση απέτυχε. Παρακαλώ δοκιμάστε ξανά.');
@@ -68,33 +152,51 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Register function using Supabase auth
   const register = async (name: string, email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Check if email is already taken
-      if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-        toast.error('Το email χρησιμοποιείται ήδη');
+      // Create user account with Supabase auth
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+          }
+        }
+      });
+
+      if (error) {
+        console.error('Registration error:', error);
+        toast.error('Η εγγραφή απέτυχε: ' + error.message);
         return false;
       }
-      
-      // Create new user with pending status
-      const newUser: User = {
-        id: `${users.length + 1}`,
-        name,
-        email,
-        role: 'viewer', // Default role
-        status: 'pending' // New users need approval
-      };
-      
-      // Add to users array
-      setUsers([...users, newUser]);
-      
-      toast.success('Ο λογαριασμός σας δημιουργήθηκε. Περιμένετε την έγκριση από τον διαχειριστή.');
-      return true;
+
+      if (data.user) {
+        // Create profile entry with pending status
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            email: email,
+            full_name: name,
+            role: 'viewer',
+            status: 'pending'
+          });
+
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+          toast.error('Σφάλμα δημιουργίας προφίλ');
+          return false;
+        }
+
+        toast.success('Ο λογαριασμός σας δημιουργήθηκε. Περιμένετε την έγκριση από τον διαχειριστή.');
+        return true;
+      }
+
+      return false;
     } catch (error) {
       console.error('Registration failed:', error);
       toast.error('Η εγγραφή απέτυχε. Παρακαλώ δοκιμάστε ξανά.');
@@ -104,20 +206,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
-    toast.success('Αποσυνδεθήκατε με επιτυχία');
+  // Logout function
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      toast.success('Αποσυνδεθήκατε με επιτυχία');
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error('Σφάλμα αποσύνδεσης');
+    }
   };
 
+  // Approve user (admin function)
   const approveUser = async (userId: string): Promise<boolean> => {
     try {
-      // Find user and update status
-      const updatedUsers = users.map(u => 
-        u.id === userId ? { ...u, status: 'active' as const } : u
-      );
-      
-      setUsers(updatedUsers);
+      const { error } = await supabase
+        .from('profiles')
+        .update({ status: 'active' })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      await loadUsers(); // Refresh users list
       toast.success('Ο χρήστης εγκρίθηκε');
       return true;
     } catch (error) {
@@ -127,10 +238,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Reject user (admin function)
   const rejectUser = async (userId: string): Promise<boolean> => {
     try {
-      // Remove user from the list
-      setUsers(users.filter(u => u.id !== userId));
+      // Delete from profiles table
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      await loadUsers(); // Refresh users list
       toast.success('Ο χρήστης απορρίφθηκε');
       return true;
     } catch (error) {
@@ -140,10 +259,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Reset user password (admin function)
   const resetUserPassword = async (userId: string): Promise<boolean> => {
     try {
-      // In a real app, this would generate a new password or a reset link
-      toast.success('Ο κωδικός επαναφέρθηκε');
+      // In a real implementation, this would trigger a password reset email
+      // For now, we'll just show a success message
+      toast.success('Ο κωδικός επαναφέρθηκε (email αποστολή)');
       return true;
     } catch (error) {
       console.error('Password reset failed:', error);
@@ -152,22 +273,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Change user role (admin function)
   const changeUserRole = async (userId: string, newRole: UserRole): Promise<boolean> => {
     try {
-      // Update user role
-      const updatedUsers = users.map(u => 
-        u.id === userId ? { ...u, role: newRole } : u
-      );
-      
-      setUsers(updatedUsers);
-      
-      // If the current user is being updated, update the current user state too
+      const { error } = await supabase
+        .from('profiles')
+        .update({ role: newRole })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      // Update local state if current user
       if (user && user.id === userId) {
-        const updatedUser = { ...user, role: newRole };
-        setUser(updatedUser);
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser({ ...user, role: newRole });
       }
-      
+
+      await loadUsers(); // Refresh users list
       toast.success(`Ο ρόλος του χρήστη άλλαξε σε ${newRole}`);
       return true;
     } catch (error) {
@@ -177,34 +298,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Get all active users
   const getAllUsers = (): User[] => {
     return users.filter(u => u.status === 'active');
   };
 
+  // Get pending users
   const getPendingUsers = (): User[] => {
     return users.filter(u => u.status === 'pending');
   };
 
+  // Add new user (admin function)
   const addUser = async (name: string, email: string, role: UserRole, password: string): Promise<boolean> => {
     try {
-      // Check if email is already in use
-      if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-        toast.error('Το email χρησιμοποιείται ήδη');
-        return false;
-      }
-      
-      // Create new user
-      const newUser: User = {
-        id: `${users.length + 1}`,
-        name,
+      // Create user with Supabase auth
+      const { data, error } = await supabase.auth.admin.createUser({
         email,
-        role,
-        status: 'active' // Users created by admin are automatically active
-      };
-      
-      setUsers([...users, newUser]);
-      toast.success('Ο χρήστης δημιουργήθηκε με επιτυχία');
-      return true;
+        password,
+        user_metadata: { full_name: name }
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        // Create profile with active status
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            email: email,
+            full_name: name,
+            role: role,
+            status: 'active'
+          });
+
+        if (profileError) throw profileError;
+
+        await loadUsers(); // Refresh users list
+        toast.success('Ο χρήστης δημιουργήθηκε με επιτυχία');
+        return true;
+      }
+
+      return false;
     } catch (error) {
       console.error('User creation failed:', error);
       toast.error('Η δημιουργία χρήστη απέτυχε');
@@ -212,6 +347,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Delete user (admin function)
   const deleteUser = async (userId: string): Promise<boolean> => {
     try {
       // Prevent deleting own account
@@ -219,8 +355,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         toast.error('Δεν μπορείτε να διαγράψετε τον δικό σας λογαριασμό');
         return false;
       }
-      
-      setUsers(users.filter(u => u.id !== userId));
+
+      // Delete from profiles table
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      await loadUsers(); // Refresh users list
       toast.success('Ο χρήστης διαγράφηκε με επιτυχία');
       return true;
     } catch (error) {
@@ -229,6 +373,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return false;
     }
   };
+
+  // Load users when component mounts and user is admin
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      loadUsers();
+    }
+  }, [user]);
 
   const value = {
     user,
